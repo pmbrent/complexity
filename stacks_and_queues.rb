@@ -5,19 +5,23 @@ class MinMaxStack
 
   def initialize(arr = [])
     @store = arr
-    @sorted = []
   end
 
   def pop
-    el = store[-1]
+    el = store[-1][1]
     self.store = store[0...-1]
-    remove_from_sorted(el)
     el
   end
 
   def push(el)
-    store << el
-    add_to_sorted(el)
+    prev = peek
+    if prev.nil?
+      store << [el, el, el]
+    else
+      prev.first > el ? min = el : min = prev.first
+      prev.last < el ? max = el : max = prev.last
+      store << [min, el, max]
+    end
   end
 
   def peek
@@ -33,43 +37,13 @@ class MinMaxStack
   end
 
   def max
-    sorted.last
+    return nil if store.empty?
+    peek.last
   end
 
   def min
-    sorted.first
-  end
-
-  def add_to_sorted(el)
-    if sorted.empty?
-      sorted << el
-    else
-      idx = retrieve_index(sorted.dup, el)
-      sorted.insert(idx, el)
-    end
-  end
-
-  def remove_from_sorted(el)
-    idx = retrieve_index(sorted.dup, el)
-    sorted.delete_at(idx)
-  end
-
-  def retrieve_index(arr, el)
-    if arr.length <= 1
-      return 0 if arr[0] >= el
-      return 1 if arr[0] < el  # danger if trying to remove nonexistent el
-    end
-
-    halfway = arr.length / 2
-
-    case el <=> arr[halfway]
-    when 1
-      return halfway + retrieve_index(arr.drop(halfway), el)
-    when 0
-      return halfway
-    when -1
-      return retrieve_index(arr.take(halfway), el)
-    end
+    return nil if store.empty?
+    peek.first
   end
 
 end
@@ -91,7 +65,7 @@ class MinMaxStackQueue
     if outbox.empty?
       slinky
     end
-    outbox.pop
+    outbox.pop[1]
   end
 
   def size

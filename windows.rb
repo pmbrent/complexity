@@ -59,11 +59,11 @@ end
 arr = Array.new(100000) { rand(1000) - 500 }
 puts Benchmark.measure {
 
-  bad_windowed_max_range(arr, 20)
+  p bad_windowed_max_range(arr, 100)
 }
 
 puts Benchmark.measure {
 
-  windowed_max_range(arr, 20)
+  p windowed_max_range(arr, 100)
 
 }
