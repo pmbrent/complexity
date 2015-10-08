@@ -1,3 +1,5 @@
+require 'benchmark'
+
 def bad_two_sum?(arr, target)
   arr.each do |x|
     arr.each do |y|
@@ -55,5 +57,46 @@ def two_sum?(arr, target)
   false
 end
 
-
 # O(n) at worst. ;)
+
+def naive_three_sum?(arr, target)
+    arr.each_index do |idx|
+      new_arr = arr.take(idx) + arr.drop(idx + 1)
+      return true if two_sum?(new_arr, target - arr[idx])
+    end
+    false
+end
+
+def three_sum?(arr, target)
+    arr.each_index do |idx|
+      new_arr = arr.take(idx) + arr.drop(idx + 1)
+      return true if two_sum?(new_arr, target - arr[idx])
+    end
+    false
+end
+
+def x_sum?(x, arr, target)
+  return two_sum?(arr, target) if x == 2
+  arr.each_index do |idx|
+    new_arr = arr.take(idx) + arr.drop(idx + 1)
+    return true if x_sum?(x - 1, new_arr, target - arr[idx])
+  end
+
+  false
+end
+
+arr = Array.new(100) { rand(10) - 5 }
+
+(2..5).each do |idx|
+puts Benchmark.measure {
+
+  x_sum?(idx, arr, 5000000)
+
+}
+end
+
+# 0.000000   0.000000   0.000000 (  0.000028) => two_sum
+# 0.000000   0.000000   0.000000 (  0.002203) => three_sum
+# 0.210000   0.000000   0.210000 (  0.217597) => four_sum
+# 21.150000   0.230000  21.380000 ( 21.526148) => five_sum, runtime increased by factor of array size.
+# six_sum... still waiting....
